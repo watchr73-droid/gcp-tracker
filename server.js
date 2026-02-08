@@ -2,7 +2,6 @@ import express from "express";
 import fetch from "node-fetch";
 
 const app = express();
-
 let latest = 0;
 
 async function fetchScore() {
@@ -10,15 +9,19 @@ async function fetchScore() {
     const r = await fetch("https://global-mind.org/gcpdot/gcp.html");
     const t = await r.text();
 
-    const m = t.match(/([0-9]\.[0-9]+)/);
-    if (m) {
-      let v = parseFloat(m[1]);
-      if (v <= 1) v = v * 100;
-      latest = Math.round(v);
-      console.log("score", latest);
+    // მოძებნე ნებისმიერი პროცენტული მნიშვნელობა
+    const m = t.match(/([0-9]+\.?[0-9]*)/g);
+
+    if (m && m.length) {
+      let val = parseFloat(m[0]);
+
+      if (val <= 1) val = val * 100;
+      latest = Math.round(val);
+
+      console.log("score:", latest);
     }
   } catch (e) {
-    console.log("fetch error");
+    console.log("fetch error", e);
   }
 }
 
@@ -32,7 +35,7 @@ app.get("/", (req, res) => {
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
-  <body style="background:#111;color:white;text-align:center;font-family:sans-serif">
+  <body style="background:#000;color:white;text-align:center;font-family:sans-serif">
 
   <h2>GCP Tracker</h2>
 
